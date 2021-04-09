@@ -1,3 +1,7 @@
+use clap::Clap;
+
+mod cli;
+
 fn main() {
-    println!("At your command!");
+    let options = cli::Options::parse();
 }
