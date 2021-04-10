@@ -23,7 +23,7 @@ pub enum Commands {
 #[derive(Clap)]
 pub struct CreateOptions {
     /// A name of created database.
-    #[clap(long, default_value = "mcc-db")]
+    #[clap(long, default_value = "mcc")]
     pub database_name: String,
 
     /// A username of Postgress master accont. Password will be interactively requestd.
@@ -31,6 +31,6 @@ pub struct CreateOptions {
     pub master_user_name: String,
 
     /// A username of created user to own the created database. Password will be interactively requested.
-    #[clap(long, default_value = "mcc-db-owner")]
+    #[clap(long, default_value = "mcc")]
     pub owner_user_name: String,
 }

@@ -1,7 +1,7 @@
 mod cli;
 
 use clap::Clap;
-use cli::{Commands, CreateOptions, Options};
+use cli::{Commands, Options};
 use sqlx::postgres;
 use std::error::Error;
 
@@ -58,10 +58,24 @@ async fn create_database(
         .await
         .expect("Failed to connecto to the Postgrese server!");
 
+        create_user_instance(&connection, owner_user_name, database_name).await;
+        create_database_instance(connection, owner_user_name, &owner_password).await;
+}
+
+async fn create_user_instance(connection: &sqlx::Pool<sqlx::Postgres>, owner_user_name: &str, owner_password: &str) {
     sqlx::query(&format!(
-        "CREATE DATABASE \"{}\"
-        WITH ENCODING = 'UTF-8'
-        CONNECTION_LIMIT = -1;",
+        "CREATE USER {} WITH ENCRYPTED PASSWORD '{}'",
+        &owner_user_name, &owner_password
+    ))
+    .execute(connection)
+    .await
+    .expect("Failed to create user");
+}
+
+async fn create_database_instance(connection: sqlx::Pool<sqlx::Postgres>, owner_user_name: &str, database_name: &str) {
+    sqlx::query(&format!(
+        "CREATE DATABASE \"{}\" WITH OWNER = {} ENCODING = 'UTF-8'",
+        &owner_user_name,
         &database_name
     ))
     .execute(&connection)
