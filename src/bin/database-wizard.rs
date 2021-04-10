@@ -57,4 +57,14 @@ async fn create_database(
         .connect_with(connection_options)
         .await
         .expect("Failed to connecto to the Postgrese server!");
+
+    sqlx::query(&format!(
+        "CREATE DATABASE \"{}\"
+        WITH ENCODING = 'UTF-8'
+        CONNECTION_LIMIT = -1;",
+        &database_name
+    ))
+    .execute(&connection)
+    .await
+    .expect("Failed to create database");
 }

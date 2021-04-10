@@ -6,13 +6,13 @@ use clap::Clap;
 pub struct Options {
     #[clap(subcommand)]
     pub command: Commands,
-    
+
     /// URL to the Postgres SQL server host.
-    #[clap(short, long)]
+    #[clap(short, long, default_value = "localhost")]
     pub host: String,
 
     /// Listened port by Postgres SQL server.
-    #[clap(short, long)]
+    #[clap(short, long, default_value = "5432")]
     pub port: u16,
 }
 #[derive(Clap)]
@@ -23,7 +23,7 @@ pub enum Commands {
 #[derive(Clap)]
 pub struct CreateOptions {
     /// A name of created database.
-    #[clap(long)]
+    #[clap(long, default_value = "mcc-db")]
     pub database_name: String,
 
     /// A username of Postgress master accont. Password will be interactively requestd.
@@ -31,6 +31,6 @@ pub struct CreateOptions {
     pub master_user_name: String,
 
     /// A username of created user to own the created database. Password will be interactively requested.
-    #[clap(long, default_value = "mcc-bot")]
+    #[clap(long, default_value = "mcc-db-owner")]
     pub owner_user_name: String,
 }
