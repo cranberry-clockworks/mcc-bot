@@ -1,3 +1,5 @@
+use sqlx::postgres;
+
 pub async fn create_database(
     host: &str,
     port: u16,
@@ -7,7 +9,7 @@ pub async fn create_database(
     owner_password: &str,
     database_name: &str,
 ) {
-    let connection_options = postgres::PgConnectOptions::new()ca
+    let connection_options = postgres::PgConnectOptions::new()
         .host(host)
         .username(master_user_name)
         .password(&master_password)
