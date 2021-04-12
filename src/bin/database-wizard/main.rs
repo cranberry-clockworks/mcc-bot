@@ -20,17 +20,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 "Enter the new password for the user: {}",
                 opts.owner_user_name
             ));
-
-            service::create_database(
+            let connection = service::create_db_connection(
                 &options.host,
                 options.port,
                 &opts.master_user_name,
                 &master_password,
+            )
+            .await;
+            service::create_database(
+                &connection,
                 &opts.owner_user_name,
                 &owner_password,
                 &opts.database_name,
             )
             .await;
+
+            service::run_migrations(&connection).await;
         }
     }
 
