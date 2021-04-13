@@ -7,6 +7,7 @@ use std::error::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    pretty_env_logger::init();
     let main_options = Options::parse();
 
     match main_options.command {
@@ -57,12 +58,16 @@ async fn execute_create_command(
     service::create_database(&connection, owner_username, &owner_password, database_name).await;
 
     run_migration(host, port, owner_username, &owner_password).await;
+
+    log::info!("Database initialization finished!");
 }
 
 async fn execute_migrate_command(host: &str, port: u16, username: &str) {
     let password = request_password(&format!("Enter password for user: {}", username));
 
     run_migration(host, port, username, &password).await;
+
+    log::info!("Database migration finished!");
 }
 
 async fn run_migration(host: &str, port: u16, username: &str, password: &str) {

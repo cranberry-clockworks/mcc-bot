@@ -1,5 +1,5 @@
 [package]
-name = "mcc-bot"
+name = "mccbot"
 version = "0.1.0"
 authors = ["Aleksei Abakumkin <cranberry.clockworks@gmail.com>"]
 edition = "2018"

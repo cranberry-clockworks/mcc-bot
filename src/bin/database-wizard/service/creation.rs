@@ -1,6 +1,4 @@
-use crate::misc;
-
-use log::error;
+use mccbot::error;
 
 pub async fn create_database(
     connection: &sqlx::Pool<sqlx::Postgres>,
@@ -22,11 +20,11 @@ async fn create_user_instance(
         &owner_username, &owner_password
     ))
     .execute(connection)
-    .await.unwrap_or_else(|_| {
-        error!("Failed to create user: {}", owner_username);
-        misc::terminate(ExitCode::UserCreationFailure)
-    })
-    .expect("Failed to create user");
+    .await
+    .unwrap_or_else(|_| {
+        log::error!("Failed to create user: {}", owner_username);
+        error::terminate(error::ExitCode::UserCreationFailure)
+    });
 }
 
 async fn create_database_instance(
@@ -40,5 +38,8 @@ async fn create_database_instance(
     ))
     .execute(connection)
     .await
-    .expect("Failed to create database");
+    .unwrap_or_else(|_| {
+        log::error!("Failed to create database: {}", database_name);
+        error::terminate(error::ExitCode::DatabaseCreationFailure)
+    });
 }
