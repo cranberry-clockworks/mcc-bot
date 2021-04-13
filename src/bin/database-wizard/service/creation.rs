@@ -1,3 +1,7 @@
+use crate::misc;
+
+use log::error;
+
 pub async fn create_database(
     connection: &sqlx::Pool<sqlx::Postgres>,
     owner_username: &str,
@@ -18,7 +22,10 @@ async fn create_user_instance(
         &owner_username, &owner_password
     ))
     .execute(connection)
-    .await
+    .await.unwrap_or_else(|_| {
+        error!("Failed to create user: {}", owner_username);
+        misc::terminate(ExitCode::UserCreationFailure)
+    })
     .expect("Failed to create user");
 }
 
