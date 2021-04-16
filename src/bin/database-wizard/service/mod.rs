@@ -4,6 +4,7 @@ mod migration;
 pub use creation::create_database;
 pub use migration::run_migrations;
 
+use mccbot::database::DatabaseConnection;
 use mccbot::error;
 
 pub async fn create_db_connection(
@@ -11,18 +12,8 @@ pub async fn create_db_connection(
     port: u16,
     username: &str,
     password: &str,
-) -> sqlx::Pool<sqlx::Postgres> {
-    use sqlx::postgres;
-
-    let options = postgres::PgConnectOptions::new()
-        .host(host)
-        .username(&username)
-        .password(&password)
-        .port(port)
-        .ssl_mode(postgres::PgSslMode::Prefer);
-
-    postgres::PgPoolOptions::new()
-        .connect_with(options)
+) -> DatabaseConnection {
+    DatabaseConnection::connect(host, port, username, password)
         .await
         .unwrap_or_else(|_| {
             log::error!(
