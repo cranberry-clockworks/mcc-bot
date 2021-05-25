@@ -1,12 +1,13 @@
-use mccbot::database::DatabaseConnection;
-use mccbot::error;
+use crate::error::{terminate, ErrorCode};
 
-pub async fn run_migrations(connection: &DatabaseConnection) {
+use mccbot::database::DatabaseConnection;
+
+pub async fn migrate(database: &DatabaseConnection) {
     sqlx::migrate!()
-        .run(&connection.handle)
+        .run(&database.connection)
         .await
-        .unwrap_or_else(|_| {
-            log::error!("Failed to perform migration!");
-            error::terminate(error::ExitCode::DatabaseCreationFailure);
+        .unwrap_or_else(|e| {
+            log::error!("Failed to perform migration! Error: {}", e);
+            terminate(ErrorCode::MigrationFailure);
         });
 }

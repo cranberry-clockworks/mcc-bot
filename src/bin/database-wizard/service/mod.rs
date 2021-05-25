@@ -1,27 +1,22 @@
 mod creation;
 mod migration;
+mod query;
 
-pub use creation::create_database;
-pub use migration::run_migrations;
+pub use creation::init_database;
+pub use migration::migrate;
 
-use mccbot::database::DatabaseConnection;
-use mccbot::error;
+use mccbot::database::{DatabaseConnection, PgConnectOptions};
+use crate::error::{terminate, ErrorCode};
+use sqlx::postgres::PgSslMode;
 
-pub async fn create_db_connection(
-    host: &str,
-    port: u16,
-    username: &str,
-    password: &str,
-) -> DatabaseConnection {
-    DatabaseConnection::connect(host, port, username, password)
-        .await
-        .unwrap_or_else(|_| {
-            log::error!(
-                "Failed to connect to the database! Host: {}, port: {}, username: {}.",
-                host,
-                port,
-                username
-            );
-            error::terminate(error::ExitCode::ConnectionFailure)
-        })
+pub async fn connect(options: PgConnectOptions) -> DatabaseConnection {
+    let o = options.ssl_mode(PgSslMode::Prefer);
+
+    DatabaseConnection::new(o).await.unwrap_or_else(|e| {
+        log::error!(
+            "Failed to connect to the database! Error: {}",
+            e.into_database_error().unwrap()
+        );
+        terminate(ErrorCode::ConnectionFailure)
+    })
 }
