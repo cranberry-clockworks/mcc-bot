@@ -31,7 +31,7 @@ pub struct CreateOptions {
     #[clap(long, default_value = "mcc")]
     pub database_name: String,
 
-    /// A username of Postgress master accont. Password will be interactively requestd.
+    /// A username of Postgress master accont. Password will be interactively requested.
     #[clap(long, default_value = "postgres")]
     pub master_username: String,
 
@@ -42,6 +42,10 @@ pub struct CreateOptions {
 
 #[derive(Clap)]
 pub struct MigrateOptions {
+    /// A name of the database to perform migration.
+    #[clap(long, default_value = "mcc")]
+    pub database_name: String,
+
     /// Owner's username which manages service database.
     #[clap(long, default_value = "mcc")]
     pub owner_username: String,
