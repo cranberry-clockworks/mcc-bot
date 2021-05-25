@@ -14,3 +14,9 @@ CREATE TABLE public.vacancies
     description text,
     PRIMARY KEY (id)
 );
+
+CREATE TABLE public.tokens
+(
+    id character varying(256) NOT NULL,
+    token character varying(1024) NOT NULL
+);

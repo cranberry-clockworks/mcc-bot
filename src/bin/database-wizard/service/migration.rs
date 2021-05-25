@@ -8,6 +8,6 @@ pub async fn migrate(database: &DatabaseConnection) {
         .await
         .unwrap_or_else(|e| {
             log::error!("Failed to perform migration! Error: {}", e);
-            terminate(ErrorCode::MigrationFailure);
+            terminate(ErrorCode::FailedPerformMigration);
         });
 }

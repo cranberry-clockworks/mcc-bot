@@ -2,9 +2,10 @@ mod cli;
 mod error;
 mod service;
 
+use crate::error::{terminate, ErrorCode};
 use clap::Clap;
 use cli::{Commands, Options};
-use mccbot::database::PgConnectOptions;
+use mccbot::database::{DatabaseConnection, PgConnectOptions, Token};
 use mccbot::log::init_with_info_level;
 
 #[tokio::main]
@@ -46,12 +47,12 @@ async fn handle_create_command(
     owner_username: &str,
     database_name: &str,
 ) {
-    let master_password = request_password(&format!(
+    let master_password = request_secret(&format!(
         "Enter the password for master username: {}",
         master_username
     ));
 
-    let owner_password = request_password(&format!(
+    let owner_password = request_secret(&format!(
         "Enter the password for the new user: {}",
         owner_username
     ));
@@ -68,19 +69,28 @@ async fn handle_create_command(
     }
     {
         let options = PgConnectOptions::new()
-        .host(host)
-        .port(port)
-        .database(database_name)
-        .username(owner_username)
-        .password(&owner_password);
+            .host(host)
+            .port(port)
+            .database(database_name)
+            .username(owner_username)
+            .password(&owner_password);
 
         let connection = service::connect(options).await;
         service::migrate(&connection).await;
+        insert_telegram_token(&connection).await;
     }
 }
 
+async fn insert_telegram_token(database: &DatabaseConnection) {
+    let token = request_secret(&format!("Enter telegram API token:"));
+    Token::insert_telegram_token(&token, database).await.unwrap_or_else(|e| {
+        log::error!("Failed  to insert telegram token. Error: {}", e);
+        terminate(ErrorCode::FailedSetupEnvironment);
+    });
+}
+
 async fn handle_migrate_command(host: &str, port: u16, database_name: &str, username: &str) {
-    let password = request_password(&format!("Enter password for user: {}", username));
+    let password = request_secret(&format!("Enter password for user: {}", username));
 
     let options = PgConnectOptions::new()
         .host(host)
@@ -96,7 +106,7 @@ async fn handle_migrate_command(host: &str, port: u16, database_name: &str, user
     log::info!("Database migration finished!");
 }
 
-fn request_password(message: &str) -> String {
+fn request_secret(message: &str) -> String {
     println!("{}", message);
     rpassword::read_password().expect("Failed to read a password from stdin!")
 }

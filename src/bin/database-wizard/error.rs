@@ -1,8 +1,9 @@
 pub enum ErrorCode {
-    ConnectionFailure = 1,
-    UserCreationFailure = 2,
-    DatabaseCreationFailure = 3,
-    MigrationFailure = 4,
+    FailedEstablishConnectionWithDatabase = 1,
+    FailedCreateUser = 2,
+    FailedCreateDatabase = 3,
+    FailedPerformMigration = 4,
+    FailedSetupEnvironment = 5,
 }
 
 pub fn terminate(code: ErrorCode) -> ! {

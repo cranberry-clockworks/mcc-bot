@@ -1,5 +1,5 @@
-use crate::service::query::QueryTool;
 use crate::error::{terminate, ErrorCode};
+use crate::service::query::QueryTool;
 
 use mccbot::database::DatabaseConnection;
 
@@ -14,13 +14,13 @@ pub async fn init_database(
         .await
         .unwrap_or_else(|e| {
             log::error!("Failed to create user: {}. Error: {}", owner_username, e);
-            terminate(ErrorCode::UserCreationFailure)
+            terminate(ErrorCode::FailedCreateUser)
         });
 
     tool.create_database(database_name, owner_username)
         .await
         .unwrap_or_else(|e| {
             log::error!("Failed to create database: {}. Error: {}", database_name, e);
-            terminate(ErrorCode::DatabaseCreationFailure)
+            terminate(ErrorCode::FailedCreateDatabase)
         });
 }

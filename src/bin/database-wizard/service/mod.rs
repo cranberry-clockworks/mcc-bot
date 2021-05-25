@@ -5,8 +5,8 @@ mod query;
 pub use creation::init_database;
 pub use migration::migrate;
 
-use mccbot::database::{DatabaseConnection, PgConnectOptions};
 use crate::error::{terminate, ErrorCode};
+use mccbot::database::{DatabaseConnection, PgConnectOptions};
 use sqlx::postgres::PgSslMode;
 
 pub async fn connect(options: PgConnectOptions) -> DatabaseConnection {
@@ -17,6 +17,6 @@ pub async fn connect(options: PgConnectOptions) -> DatabaseConnection {
             "Failed to connect to the database! Error: {}",
             e.into_database_error().unwrap()
         );
-        terminate(ErrorCode::ConnectionFailure)
+        terminate(ErrorCode::FailedEstablishConnectionWithDatabase)
     })
 }
