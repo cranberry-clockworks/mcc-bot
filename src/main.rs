@@ -24,16 +24,4 @@ async fn run() {
         );
         terminate(ErrorCode::InvalidSettings);
     });
-
-    // let db = DatabaseConnection::new(options).await.unwrap_or_else(|e| {
-    //     log::error!("Failed to connect to the database! Error: {}", e);
-    //     terminate(ErrorCode::FailedEstablishConnectionWithDatabase);
-    // });
-    //
-    // let token = Token::get_telegram_token(&db).await.unwrap_or_else(|e| {
-    //     log::error!("Failed to fetch telegram token from database! Error: {}", e);
-    //     terminate(ErrorCode::BadEnvironment);
-    // });
-    //
-    // println!("Token is: {}", token);
 }
