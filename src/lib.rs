@@ -1,2 +1,4 @@
 pub mod database;
-pub mod log;
+pub mod error;
+pub mod settings;
+

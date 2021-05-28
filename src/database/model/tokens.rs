@@ -1,4 +1,5 @@
 use crate::database::DatabaseConnection;
+use sqlx::Postgres;
 
 static TELEGRAM_TOKEN_ID: &str = "telegram";
 
@@ -10,7 +11,7 @@ pub struct Token {
 
 impl Token {
     pub async fn insert(&self, database: &DatabaseConnection) -> Result<(), sqlx::Error> {
-        let _ = sqlx::query("INSERT INTO public.tokens VALUES ($1, $2)")
+        let _ = sqlx::query("INSERT INTO public.tokens VALUES ($1, $2);")
             .bind(&self.id)
             .bind(&self.token)
             .execute(&database.connection)
@@ -31,5 +32,13 @@ impl Token {
         .await?;
 
         Ok(())
+    }
+
+    pub async fn get_telegram_token(database: &DatabaseConnection) -> Result<String, sqlx::Error> {
+        let token = sqlx::query_as::<_, Token>("SELECT * FROM public.tokens WHERE id = $1;")
+            .bind(TELEGRAM_TOKEN_ID)
+            .fetch_one(&database.connection)
+            .await?;
+        Ok(token.token)
     }
 }
