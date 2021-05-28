@@ -7,13 +7,8 @@ pub struct Options {
     #[clap(subcommand)]
     pub command: Commands,
 
-    /// URL to the Postgres SQL server host.
-    #[clap(short, long, default_value = "localhost")]
-    pub host: String,
-
-    /// Listened port by Postgres SQL server.
-    #[clap(short, long, default_value = "5432")]
-    pub port: u16,
+    #[clap(short, long, default_value = "settings.toml")]
+    pub settings: String,
 }
 
 #[derive(Clap)]
@@ -22,31 +17,12 @@ pub enum Commands {
     Create(CreateOptions),
 
     /// Migrate database to last available version.
-    Migrate(MigrateOptions),
+    Migrate,
 }
 
 #[derive(Clap)]
 pub struct CreateOptions {
-    /// A name of created database.
-    #[clap(long, default_value = "mcc")]
-    pub database_name: String,
-
     /// A username of Postgress master accont. Password will be interactively requested.
     #[clap(long, default_value = "postgres")]
     pub master_username: String,
-
-    /// A username of created user to own the created database. Password will be interactively requested.
-    #[clap(long, default_value = "mcc")]
-    pub owner_username: String,
-}
-
-#[derive(Clap)]
-pub struct MigrateOptions {
-    /// A name of the database to perform migration.
-    #[clap(long, default_value = "mcc")]
-    pub database_name: String,
-
-    /// Owner's username which manages service database.
-    #[clap(long, default_value = "mcc")]
-    pub owner_username: String,
 }

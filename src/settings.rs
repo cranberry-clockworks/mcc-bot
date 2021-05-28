@@ -1,19 +1,17 @@
-use std::path::Path;
+use crate::database::PgConnectOptions;
+use serde::Deserialize;
 use std::fs::File;
 use std::io::Read;
-use serde::Deserialize;
-use crate::database::PgConnectOptions;
+use std::path::Path;
 
 #[derive(Deserialize)]
-pub struct Settings
-{
+pub struct Settings {
     pub database: DatabaseConfig,
-    pub tokens: Tokens
+    pub tokens: Tokens,
 }
 
 #[derive(Deserialize)]
-pub struct DatabaseConfig
-{
+pub struct DatabaseConfig {
     #[serde(default = "default_host")]
     pub host: String,
 
@@ -34,9 +32,8 @@ fn default_port() -> u16 {
 }
 
 #[derive(Deserialize)]
-pub struct Tokens
-{
-    pub telegram: String
+pub struct Tokens {
+    pub telegram: String,
 }
 
 impl Settings {
