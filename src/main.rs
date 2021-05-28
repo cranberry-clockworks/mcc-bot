@@ -1,5 +1,11 @@
-use teloxide::prelude::*;
-use teloxide::types::{KeyboardButton, KeyboardMarkup, ReplyMarkup};
+use mccbot::database::{DatabaseConnection, PgConnectOptions};
+use mccbot::error::{terminate, ErrorCode};
+use mccbot::settings;
+use mccbot::settings::Settings;
+
+use std::path::Path;
+
+use frankenstein::PassportElementError::PassportElementErrorTranslationFilesVariant;
 
 #[tokio::main]
 async fn main() {
@@ -7,27 +13,15 @@ async fn main() {
 }
 
 async fn run() {
-    teloxide::enable_logging!();
-    log::info!("Starting bot...");
+    pretty_env_logger::init();
 
-    let bot = Bot::from_env().auto_send();
-
-    teloxide::repl(bot, |message| async move {
-        let usr = message.update.from().unwrap();
-        let ans = format!(
-            "id:{}\nname:{}\ntext:{}",
-            usr.id,
-            usr.username.as_ref().unwrap_or(&String::new()),
-            &message.update.text().unwrap_or(&String::new())
+    let settings_path = Path::new("settings.toml");
+    let settings = Settings::from_file(&settings_path).unwrap_or_else(|e| {
+        log::error!(
+            "Failed to read settings from '{}'. Error: {}",
+            settings_path.to_str().unwrap(),
+            e
         );
-        let k = KeyboardMarkup::new(vec![
-            vec![KeyboardButton::new("A")],
-            vec![KeyboardButton::new("B"), KeyboardButton::new("C")],
-        ])
-        .one_time_keyboard(true);
-        let m = ReplyMarkup::Keyboard(k);
-        message.answer(&ans).reply_markup(m).await?;
-        respond(())
-    })
-    .await;
+        terminate(ErrorCode::InvalidSettings);
+    });
 }
