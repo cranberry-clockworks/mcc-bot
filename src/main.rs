@@ -1,9 +1,11 @@
 use mccbot::settings;
-use mccbot::database::{DatabaseConnection, PgConnectOptions, Token};
+use mccbot::database::{DatabaseConnection, PgConnectOptions};
 use mccbot::error::{terminate, ErrorCode};
-use std::path::Path;
-use frankenstein::PassportElementError::PassportElementErrorTranslationFilesVariant;
 use mccbot::settings::Settings;
+
+use std::path::Path;
+
+use frankenstein::PassportElementError::PassportElementErrorTranslationFilesVariant;
 
 #[tokio::main]
 async fn main() {

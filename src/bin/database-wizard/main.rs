@@ -5,7 +5,7 @@ mod service;
 use crate::error::{terminate, ErrorCode};
 use clap::Clap;
 use cli::{Commands, Options};
-use mccbot::database::{DatabaseConnection, PgConnectOptions, Token};
+use mccbot::database::{DatabaseConnection, PgConnectOptions};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -76,18 +76,7 @@ async fn handle_create_command(
 
         let connection = service::connect(options).await;
         service::migrate(&connection).await;
-        insert_telegram_token(&connection).await;
     }
-}
-
-async fn insert_telegram_token(database: &DatabaseConnection) {
-    let token = request_secret(&format!("Enter telegram API token:"));
-    Token::insert_telegram_token(&token, database)
-        .await
-        .unwrap_or_else(|e| {
-            log::error!("Failed  to insert telegram token. Error: {}", e);
-            terminate(ErrorCode::FailedSetupEnvironment);
-        });
 }
 
 async fn handle_migrate_command(host: &str, port: u16, database_name: &str, username: &str) {
