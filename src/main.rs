@@ -24,4 +24,15 @@ async fn run() {
         );
         terminate(ErrorCode::InvalidSettings);
     });
+
+    let db_options = settings.to_database_options();
+    let db = DatabaseConnection::new(db_options).await.unwrap_or_else(
+        |e| {
+            log::error!(
+                "Failed to connect to the database. Error: {}",
+                e
+            );
+            terminate(ErrorCode::FailedConnectToDatabase);
+        }
+    );
 }

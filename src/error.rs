@@ -1,5 +1,5 @@
 pub enum ErrorCode {
-    FailedEstablishConnectionWithDatabase = 1,
+    FailedConnectToDatabase = 1,
     BadEnvironment = 2,
     InvalidSettings = 3,
 }

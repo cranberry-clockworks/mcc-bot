@@ -17,6 +17,6 @@ pub async fn connect(options: PgConnectOptions) -> DatabaseConnection {
             "Failed to connect to the database! Error: {}",
             e.into_database_error().unwrap()
         );
-        terminate(ErrorCode::FailedEstablishConnectionWithDatabase)
+        terminate(ErrorCode::FailedConnectToDatabase)
     })
 }
