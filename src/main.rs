@@ -26,13 +26,12 @@ async fn run() {
     });
 
     let db_options = settings.to_database_options();
-    let db = DatabaseConnection::new(db_options).await.unwrap_or_else(
-        |e| {
-            log::error!(
-                "Failed to connect to the database. Error: {}",
-                e
-            );
+    let db = DatabaseConnection::new(db_options)
+        .await
+        .unwrap_or_else(|e| {
+            log::error!("Failed to connect to the database. Error: {}", e);
             terminate(ErrorCode::FailedConnectToDatabase);
-        }
-    );
+        });
+
+    mccbot::bot::IncomingListener::new(&settings.tokens.telegram).run().await;
 }
