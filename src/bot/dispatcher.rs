@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use tokio::sync::RwLock;
 use tokio::time::Duration;
-use super::helper::MessageUnpacker;
 use frankenstein::EditMessageResponse::Message;
 
 enum State {
@@ -26,8 +25,10 @@ impl Dispatcher {
 
     pub fn dispatch(&self, update: Update) {
         if let Some(message) = &update.message {
-            if let Some((user_id, text)) = MessageUnpacker::new(message).unpack() {
-                self.dispatch_unpacked(user_id, text);
+            if let (Some(user), Some(text)) = (&message.from, &message.text) {
+                self.dispatch_unpacked(user.id, text.to_string());
+            } else {
+                log::warn!("Failed to unpack message.");
             }
         } else {
             log::debug!("Received non text message while expected.");
