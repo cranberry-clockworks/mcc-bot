@@ -1,9 +1,5 @@
 use crate::bot::api::AsyncApiWrapper;
-use frankenstein::ChatIdEnum;
-use frankenstein::GetUpdatesParams;
-use frankenstein::SendMessageParams;
-use frankenstein::TelegramApi;
-use frankenstein::{Api, Update, Error};
+use frankenstein::Update;
 use tokio::task;
 
 pub struct Service {
