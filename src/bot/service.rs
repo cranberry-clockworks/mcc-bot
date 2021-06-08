@@ -1,15 +1,21 @@
 use crate::bot::api::AsyncApiWrapper;
+use crate::bot::dispatcher::Dispatcher;
 use frankenstein::Update;
+use std::ops::Deref;
+use std::sync::Arc;
 use tokio::task;
 
 pub struct Service {
     api: AsyncApiWrapper,
+    dispatcher: Arc<Dispatcher>,
 }
 
 impl Service {
     pub fn new(telegram_token: &str) -> Self {
+        let api = AsyncApiWrapper::new(telegram_token);
         Self {
-            api: AsyncApiWrapper::new(telegram_token),
+            api: api.clone(),
+            dispatcher: Arc::new(Dispatcher::new(api)),
         }
     }
 
@@ -24,16 +30,12 @@ impl Service {
 
     fn schedule(&self, updates: Vec<Update>) {
         for update in updates {
-            let a = self.api.clone();
+            let d = self.dispatcher.clone();
             let u = update.clone();
 
             task::spawn(async move {
-                process_update(a, u);
+                d.dispatch(u);
             });
         }
     }
-}
-
-fn process_update(api: AsyncApiWrapper, update: Update) {
-    println!("Update {}", update.update_id);
 }

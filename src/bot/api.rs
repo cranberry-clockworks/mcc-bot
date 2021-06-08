@@ -1,11 +1,12 @@
 use frankenstein::{Api, Error, GetUpdatesParams, MethodResponse, TelegramApi, Update};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc};
 use tokio::task;
 use tokio::task::JoinHandle;
+use tokio::sync::{Mutex, RwLock};
 
 pub struct AsyncApiWrapper {
     api: Arc<Mutex<Api>>,
-    update_params: Arc<Mutex<GetUpdatesParams>>,
+    update_params: Arc<RwLock<GetUpdatesParams>>,
 }
 
 impl AsyncApiWrapper {
@@ -16,7 +17,7 @@ impl AsyncApiWrapper {
 
         Self {
             api: Arc::new(Mutex::new(Api::new(token.to_string()))),
-            update_params: Arc::new(Mutex::new(update)),
+            update_params: Arc::new(RwLock::new(update)),
         }
     }
 
@@ -24,25 +25,26 @@ impl AsyncApiWrapper {
         let api = self.api.clone();
         let update_params = self.update_params.clone();
 
-        task::spawn_blocking(move || {
+        task::spawn(async move {
             {
-                let mut locked_update_params = update_params.lock().unwrap();
+                let updates: Vec<Update>;
                 {
-                    let updates: Vec<Update>;
+                    let locked_update_params = update_params.read().await;
                     {
-                        let locked_api = api.lock().unwrap();
+                        let locked_api = api.lock().await;
                         updates = locked_api.get_updates(&*locked_update_params)?.result;
                     }
-
+                }
+                {
                     // Telegram API expect confirmation of update receiving by setting offset
                     // greater than latest one by one.
                     // We expect that one process messages gracefully or skip it.
                     if let Some(latest) = updates.iter().map(|u| u.update_id).max() {
+                        let mut locked_update_params = update_params.write().await;
                         locked_update_params.set_offset(Some(latest + 1));
                     }
-
-                    return Ok(updates);
                 }
+                return Ok(updates);
             }
         })
     }
