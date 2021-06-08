@@ -28,6 +28,7 @@ impl AsyncApiWrapper {
         task::spawn(async move {
             {
                 let updates: Vec<Update>;
+
                 {
                     let locked_update_params = update_params.read().await;
                     {
@@ -35,15 +36,15 @@ impl AsyncApiWrapper {
                         updates = locked_api.get_updates(&*locked_update_params)?.result;
                     }
                 }
-                {
-                    // Telegram API expect confirmation of update receiving by setting offset
-                    // greater than latest one by one.
-                    // We expect that one process messages gracefully or skip it.
-                    if let Some(latest) = updates.iter().map(|u| u.update_id).max() {
-                        let mut locked_update_params = update_params.write().await;
-                        locked_update_params.set_offset(Some(latest + 1));
-                    }
+
+                // Telegram API expect confirmation of update receiving by setting offset
+                // greater than latest one by one.
+                // We expect that one process messages gracefully or skip it.
+                if let Some(latest) = updates.iter().map(|u| u.update_id).max() {
+                    let mut locked_update_params = update_params.write().await;
+                    locked_update_params.set_offset(Some(latest + 1));
                 }
+
                 return Ok(updates);
             }
         })
