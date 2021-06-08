@@ -47,3 +47,12 @@ impl AsyncApiWrapper {
         })
     }
 }
+
+impl Clone for AsyncApiWrapper {
+    fn clone(&self) -> Self {
+        Self {
+            api: self.api.clone(),
+            update_params: self.update_params.clone(),
+        }
+    }
+}
