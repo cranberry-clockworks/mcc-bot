@@ -40,7 +40,7 @@ impl Api {
     }
 
     pub async fn send_reply(&self, text: String, chat_id: isize) -> Result<(), Error> {
-        let mut send_params = SendMessageParams::new(ChatIdEnum::IsizeVariant(chat_id), text);
+        let send_params = SendMessageParams::new(ChatIdEnum::IsizeVariant(chat_id), text);
 
         let api_locked = self.api.lock().await;
         let _ = task::block_in_place(|| {api_locked.send_message(&send_params)})?;

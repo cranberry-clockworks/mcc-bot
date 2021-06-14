@@ -59,7 +59,7 @@ async fn create(settings: &Settings, master_username: &str) {
         service::init_database(&connection, &db.username, &db.password, &db.database).await;
     }
 
-    migrate(settings);
+    migrate(settings).await;
 }
 
 async fn migrate(settings: &Settings) {
