@@ -1,5 +1,7 @@
 use super::api::Api;
+use super::commands;
 use crate::bot::shared::Shared;
+use crate::localization;
 use frankenstein::EditMessageResponse::Message;
 use frankenstein::Update;
 use std::collections::HashMap;
@@ -30,20 +32,16 @@ impl Dispatcher {
     }
 
     async fn dispatch_unpacked(&self, user_id: isize, chat_id: isize, text: String) {
-        if text.eq("/help") {
+        if text.eq(commands::help()) {
             self.handle_help_command(chat_id).await;
         }
     }
 
     async fn handle_help_command(&self, chat_id: isize) {
-        let help_message = "This is mcc bot!\n\
-            List of available commands:\n\
-            `/help` - See this command"
-            .to_string();
-
+        let reply = localization::help_message();
         self.shared
             .api
-            .send_reply(help_message, chat_id)
+            .send_reply(reply, chat_id)
             .await
             .unwrap_or_else(|e| {
                 log::error!("Failed to send a reply: {:?}!", e);

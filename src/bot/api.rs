@@ -29,7 +29,7 @@ impl Api {
         let mut params_locked = self.update_parameters.lock().await;
         {
             let api_locked = self.api.lock().await;
-            updates = task::block_in_place(|| {api_locked.get_updates(&params_locked)})?.result;
+            updates = task::block_in_place(|| api_locked.get_updates(&params_locked))?.result;
         }
 
         if let Some(latest) = updates.iter().map(|u| u.update_id).max() {
@@ -43,7 +43,7 @@ impl Api {
         let send_params = SendMessageParams::new(ChatIdEnum::IsizeVariant(chat_id), text);
 
         let api_locked = self.api.lock().await;
-        let _ = task::block_in_place(|| {api_locked.send_message(&send_params)})?;
+        let _ = task::block_in_place(|| api_locked.send_message(&send_params))?;
         Ok(())
     }
 }
