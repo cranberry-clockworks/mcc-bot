@@ -1,35 +1,28 @@
-use super::api::AsyncApiWrapper;
+use super::api::Api;
+use crate::bot::shared::Shared;
 use frankenstein::EditMessageResponse::Message;
 use frankenstein::Update;
 use std::collections::HashMap;
-use std::sync::Mutex;
-use tokio::sync::RwLock;
+use std::ops::Deref;
+use std::sync::Arc;
 use tokio::time::Duration;
 
-enum State {
-    None,
-}
-
 pub struct Dispatcher {
-    api: AsyncApiWrapper,
-    user_states: RwLock<HashMap<isize, State>>,
+    shared: Arc<Shared>,
 }
 
 impl Dispatcher {
-    pub fn new(api: AsyncApiWrapper) -> Self {
-        Self {
-            api,
-            user_states: RwLock::new(HashMap::new()),
-        }
+    pub fn new(shared: Arc<Shared>) -> Self {
+        Self { shared }
     }
 
-    pub async fn dispatch(&self, update: &Update) {
+    pub async fn dispatch(&self, update: Update) {
         if let Some(message) = &update.message {
             if let (Some(user), Some(text)) = (&message.from(), &message.text()) {
                 self.dispatch_unpacked(user.id, message.chat().id, text.to_string())
                     .await;
             } else {
-                log::warn!("Failed to unpack message.");
+                log::debug!("Received message without text.");
             }
         } else {
             log::debug!("Received non text message while expected.");
@@ -43,13 +36,17 @@ impl Dispatcher {
     }
 
     async fn handle_help_command(&self, chat_id: isize) {
-        let _ = self
+        let help_message = "This is mcc bot!\n\
+            List of available commands:\n\
+            `/help` - See this command"
+            .to_string();
+
+        self.shared
             .api
-            .send_reply("hello".to_string(), chat_id)
+            .send_reply(help_message, chat_id)
             .await
-            .unwrap()
             .unwrap_or_else(|e| {
-                log::error!("Failed to send reply: {:?}", e);
-            });
+                log::error!("Failed to send a reply: {:?}!", e);
+            })
     }
 }
