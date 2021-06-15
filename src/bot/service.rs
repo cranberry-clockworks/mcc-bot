@@ -1,5 +1,5 @@
 use crate::bot::api::Api;
-use crate::bot::dispatcher::Dispatcher;
+use crate::bot::message_handler::MessageHandler;
 use crate::bot::shared::Shared;
 use frankenstein::Update;
 use std::ops::Deref;
@@ -11,16 +11,16 @@ use tokio::time;
 
 pub struct Service {
     shared: Arc<Shared>,
-    dispatcher: Arc<Dispatcher>,
+    handler: Arc<MessageHandler>,
 }
 
 impl Service {
     pub fn new(telegram_token: &str) -> Self {
         let api = Api::new(telegram_token);
         let shared = Arc::new(Shared::new(api));
-        let dispatcher = Arc::new(Dispatcher::new(shared.clone()));
+        let handler = Arc::new(MessageHandler::new(shared.clone()));
 
-        Self { shared, dispatcher }
+        Self { shared, handler }
     }
 
     pub async fn run(&self) {
@@ -35,10 +35,10 @@ impl Service {
     async fn schedule(&self, updates: &Vec<Update>) {
         for update in updates {
             let u = update.clone();
-            let d = self.dispatcher.clone();
+            let h = self.handler.clone();
 
             task::spawn(async move {
-                d.dispatch(u).await;
+                h.handle(u).await;
             });
         }
     }

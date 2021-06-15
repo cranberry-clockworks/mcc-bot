@@ -1,6 +1,6 @@
 mod api;
-pub mod commands;
-mod dispatcher;
+pub mod command;
+mod message_handler;
 mod service;
 mod shared;
 
