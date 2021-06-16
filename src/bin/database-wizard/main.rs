@@ -1,15 +1,16 @@
-mod cli;
-mod error;
-mod service;
-
-use crate::error::{terminate, ErrorCode};
-use cli::{Commands, Options};
-use mccbot::database::{DatabaseConnection, PgConnectOptions};
-use mccbot::settings::Settings;
+use std::path::Path;
 
 use clap::Clap;
 
-use std::path::Path;
+use cli::{Commands, Options};
+use mccbot::database::PgConnectOptions;
+use mccbot::settings::Settings;
+
+use crate::error::{terminate, ErrorCode};
+
+mod cli;
+mod error;
+mod service;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -59,7 +60,7 @@ async fn create(settings: &Settings, master_username: &str) {
         service::init_database(&connection, &db.username, &db.password, &db.database).await;
     }
 
-    migrate(settings);
+    migrate(settings).await;
 }
 
 async fn migrate(settings: &Settings) {
