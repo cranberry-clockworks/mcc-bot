@@ -1,7 +1,4 @@
-use frankenstein::{
-    ChatIdEnum, Error, GetUpdatesParams, MethodResponse, SendMessageParams, TelegramApi, Update,
-};
-
+use frankenstein::{ChatIdEnum, Error, GetUpdatesParams, SendMessageParams, TelegramApi, Update};
 use tokio::sync::Mutex;
 use tokio::task;
 

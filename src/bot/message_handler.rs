@@ -1,6 +1,6 @@
 use super::api::Api;
 use super::command;
-use crate::bot::command::{CommandKind, Command};
+use crate::bot::command::{Command, CommandKind};
 use crate::bot::shared::Shared;
 use crate::localization;
 use frankenstein::EditMessageResponse::Message;
@@ -29,10 +29,9 @@ impl MessageHandler {
             if let (Some(user), Some(text)) = (&message.from(), &message.text()) {
                 let ident = Identifier {
                     user_id: user.id,
-                    chat_id: message.chat().id
+                    chat_id: message.chat().id,
                 };
-                self.dispatch_unpacked(text.to_string(), ident)
-                    .await;
+                self.dispatch_unpacked(text.to_string(), ident).await;
             } else {
                 log::debug!("Received message without text.");
             }
