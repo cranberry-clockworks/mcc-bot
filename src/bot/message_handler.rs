@@ -53,6 +53,7 @@ impl MessageHandler {
             CommandKind::Help => {
                 self.handle_help_command(ident.chat_id).await;
             }
+            _ => (),
         }
     }
 

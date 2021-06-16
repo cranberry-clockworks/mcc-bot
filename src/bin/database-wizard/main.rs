@@ -6,7 +6,7 @@ use cli::{Commands, Options};
 use mccbot::database::PgConnectOptions;
 use mccbot::settings::Settings;
 
-use crate::error::{ErrorCode, terminate};
+use crate::error::{terminate, ErrorCode};
 
 mod cli;
 mod error;
