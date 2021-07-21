@@ -1,6 +1,6 @@
 use crate::bot::command::CommandKind;
 
-pub fn default_command_list() -> String {
+fn default_command_list() -> String {
     format!(
         "Список команд:\n\
         {0} - показать список команд",
