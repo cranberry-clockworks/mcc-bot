@@ -1,7 +1,9 @@
 mod api;
 pub mod command;
-mod message_handler;
+mod frame;
+mod respondents;
 mod service;
 mod shared;
 
+pub use frame::Frame;
 pub use service::Service;

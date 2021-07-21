@@ -1,7 +1,7 @@
 mod connection;
 mod model;
-mod operations;
+mod requester;
 
 pub use connection::*;
 pub use model::*;
-pub use operations::*;
+pub use requester::*;

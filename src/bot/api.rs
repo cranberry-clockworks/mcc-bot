@@ -1,4 +1,4 @@
-use frankenstein::{ChatIdEnum, Error, GetUpdatesParams, SendMessageParams, TelegramApi, Update};
+use frankenstein::{ChatId, Error, GetUpdatesParams, SendMessageParams, TelegramApi, Update};
 use tokio::sync::Mutex;
 use tokio::task;
 
@@ -9,13 +9,13 @@ pub struct Api {
 
 impl Api {
     pub fn new(token: &str) -> Self {
-        let timeout_seconds: isize = 1;
+        let timeout_seconds: u32 = 1;
         let mut params = GetUpdatesParams::new();
         params.set_timeout(Some(timeout_seconds));
         params.set_allowed_updates(Some(vec!["message".to_string()]));
 
         Self {
-            api: Mutex::new(Box::new(frankenstein::Api::new(token.to_string()))),
+            api: Mutex::new(Box::new(frankenstein::Api::new(token))),
             update_parameters: Mutex::new(params),
         }
     }
@@ -36,8 +36,8 @@ impl Api {
         return Ok(updates);
     }
 
-    pub async fn send_reply(&self, text: String, chat_id: isize) -> Result<(), Error> {
-        let send_params = SendMessageParams::new(ChatIdEnum::IsizeVariant(chat_id), text);
+    pub async fn send_reply(&self, text: String, chat_id: i64) -> Result<(), Error> {
+        let send_params = SendMessageParams::new(ChatId::Integer(chat_id), text);
 
         let api_locked = self.api.lock().await;
         let _ = task::block_in_place(|| api_locked.send_message(&send_params))?;
