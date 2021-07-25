@@ -1,10 +1,9 @@
-use crate::bot::{api::Api, frame::Frame, shared::Shared};
+use crate::bot::{api::Api, shared::Shared};
+use crate::bot::states::{BotState, Context};
 use frankenstein::{Message, Update};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::task;
-
-use super::frame::respondent_for_frame;
 
 pub struct Service {
     shared: Arc<Shared>,
@@ -57,39 +56,34 @@ impl Service {
         }
     }
 
-    async fn get_initial_frame(user_id: u64, shared: &Arc<Shared>) -> Frame {
-        let frames = shared.frames.lock().await;
-        return *frames.get(&user_id).unwrap_or(&Frame::Default);
+    async fn get_initial_state(user_id: u64, shared: &Arc<Shared>) -> BotState {
+        let states = shared.frames.lock().await;
+        states.get(&user_id).unwrap_or(&BotState::Default).clone()
     }
 
-    async fn store_final_frame(frame: Frame, user_id: u64, shared: &Arc<Shared>) {
-        let mut frames = shared.frames.lock().await;
-        frames.insert(user_id, frame);
+    async fn store_final_state(state: BotState, user_id: u64, shared: &Arc<Shared>) {
+        let mut states = shared.frames.lock().await;
+        states.insert(user_id, state);
     }
 
     async fn process_batch(user_id: u64, messages: Vec<Message>, shared: Arc<Shared>) {
-        let mut frame = Service::get_initial_frame(user_id, &shared).await;
+        let mut state = Service::get_initial_state(user_id, &shared).await;
 
         for message in &messages {
-            Service::process_message(message, &mut frame, &shared).await;
+            Service::process_message(message, &mut state, &shared).await;
         }
 
-        Service::store_final_frame(frame, user_id, &shared).await;
+        Service::store_final_state(state, user_id, &shared).await;
     }
 
-    async fn process_message(message: &Message, frame: &mut Frame, shared: &Arc<Shared>) {
+    async fn process_message(message: &Message, state: &mut BotState, shared: &Arc<Shared>) {
         if let Some(text) = message.text() {
-            let response = respondent_for_frame(frame)(&text, frame);
+            let context = Context {
+                chat_id: message.chat().id(),
+                api: &shared.api,
+            };
 
-            if let Some(r) = response {
-                shared
-                    .api
-                    .send_reply(r, message.chat().id())
-                    .await
-                    .unwrap_or_else(|err| {
-                        log::error!("Failed to reply. Error: {:#?}", err);
-                    });
-            }
+            *state = state.next(&text, &context).await;
         }
     }
 }

@@ -1,10 +1,11 @@
-use crate::bot::{api::Api, Frame};
+use crate::bot::api::Api;
+use crate::bot::states::BotState;
 use std::collections::HashMap;
 use tokio::sync::Mutex;
 
 pub struct Shared {
     pub api: Api,
-    pub frames: Mutex<HashMap<u64, Frame>>,
+    pub frames: Mutex<HashMap<u64, BotState>>,
 }
 
 impl Shared {

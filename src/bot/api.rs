@@ -37,7 +37,8 @@ impl Api {
     }
 
     pub async fn send_reply(&self, text: String, chat_id: i64) -> Result<(), Error> {
-        let send_params = SendMessageParams::new(ChatId::Integer(chat_id), text);
+        let mut send_params = SendMessageParams::new(ChatId::Integer(chat_id), text);
+//        send_params.set_parse_mode(Some(String::from("MarkdownV2")));
 
         let api_locked = self.api.lock().await;
         let _ = task::block_in_place(|| api_locked.send_message(&send_params))?;

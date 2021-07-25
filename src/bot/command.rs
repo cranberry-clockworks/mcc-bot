@@ -1,24 +1,22 @@
-use crate::bot::command::CommandKind::List;
 use std::fmt::{Display, Formatter, Result};
 
 pub enum CommandKind {
     Help,
     Authorize,
-    Vacancies,
-    List,
-    View,
-    Create,
-    Delete,
+    VacanciesCreate,
+    VacanciesDelete,
+    VacanciesView,
     Exit,
 }
 
 const HELP_COMMAND: &str = "/help";
+
 const AUTHORIZE_COMMAND: &str = "/authorize";
-const VACANCIES_COMMAND: &str = "/vacancies";
-const LIST_COMMAND: &str = "/list";
-const VIEW_COMMAND: &str = "/view";
-const CREATE_COMMAND: &str = "/create";
-const DELETE_COMMAND: &str = "/delete";
+
+const VACANCIES_CREATE_COMMAND: &str = "/vacancies_create";
+const VACANCIES_DELETE_COMMAND: &str = "/vacancies_delete";
+const VACANCIES_VIEW_COMMAND: &str = "/vacancies_view";
+
 const EXIT_COMMAND: &str = "/exit";
 
 impl CommandKind {
@@ -26,11 +24,9 @@ impl CommandKind {
         match s {
             HELP_COMMAND => Some(CommandKind::Help),
             AUTHORIZE_COMMAND => Some(CommandKind::Authorize),
-            VACANCIES_COMMAND => Some(CommandKind::Vacancies),
-            LIST_COMMAND => Some(CommandKind::List),
-            VIEW_COMMAND => Some(CommandKind::View),
-            CREATE_COMMAND => Some(CommandKind::Create),
-            DELETE_COMMAND => Some(CommandKind::Delete),
+            VACANCIES_CREATE_COMMAND => Some(CommandKind::VacanciesCreate),
+            VACANCIES_DELETE_COMMAND => Some(CommandKind::VacanciesDelete),
+            VACANCIES_VIEW_COMMAND => Some(CommandKind::VacanciesView),
             EXIT_COMMAND => Some(CommandKind::Exit),
             _ => None,
         }
@@ -45,11 +41,9 @@ impl Display for CommandKind {
             match self {
                 CommandKind::Help => HELP_COMMAND,
                 CommandKind::Authorize => AUTHORIZE_COMMAND,
-                CommandKind::Vacancies => VACANCIES_COMMAND,
-                CommandKind::List => LIST_COMMAND,
-                CommandKind::View => VIEW_COMMAND,
-                CommandKind::Create => CREATE_COMMAND,
-                CommandKind::Delete => DELETE_COMMAND,
+                CommandKind::VacanciesCreate => VACANCIES_CREATE_COMMAND,
+                CommandKind::VacanciesDelete => VACANCIES_DELETE_COMMAND,
+                CommandKind::VacanciesView => VACANCIES_VIEW_COMMAND,
                 CommandKind::Exit => EXIT_COMMAND,
             }
         )
