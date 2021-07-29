@@ -22,7 +22,7 @@ pub async fn next(state: &BotState, message: &str, context: &Context<'_, '_>) ->
             vacancies::enter_create_state(context).await
         }
         crate::bot::command::CommandKind::VacanciesDelete => todo!(),
-        crate::bot::command::CommandKind::VacanciesView => todo!(),
+        crate::bot::command::CommandKind::VacanciesView => vacancies::list_vacancies(context).await,
         crate::bot::command::CommandKind::Exit => todo!(),
     }
 }

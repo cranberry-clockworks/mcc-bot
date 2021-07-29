@@ -27,10 +27,22 @@ pub async fn next_create_state(
                 .db
                 .insert_vacancy(context.user_id, title, message)
                 .await;
-            context
-                .send_reply(format!("Title:\n{}\n\nDescription:\n{}", title, message))
-                .await;
             BotState::Default
         }
     }
+}
+
+pub async fn list_vacancies(context: &Context<'_, '_>) -> BotState {
+    let reply = context
+        .db
+        .select_vacancies()
+        .await
+        .iter()
+        .map(|v| format!("#:{}\t {}", v.id, v.title))
+        .collect::<Vec<String>>()
+        .join("\n");
+
+    context.send_reply(reply).await;
+
+    BotState::Default
 }
