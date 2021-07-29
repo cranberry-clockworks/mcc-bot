@@ -1,9 +1,9 @@
-use crate::bot::states::{BotState, Context};
 use crate::bot::command::Command;
 use crate::bot::states::vacancies;
+use crate::bot::states::{BotState, Context};
 use crate::localization;
 
-pub async fn next(state: &BotState, message: &str, context: &Context<'_>) -> BotState {
+pub async fn next(state: &BotState, message: &str, context: &Context<'_, '_>) -> BotState {
     let cmd = Command::try_parse(message);
     if cmd.is_none() {
         context

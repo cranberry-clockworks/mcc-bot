@@ -8,7 +8,7 @@ CREATE TABLE public.users
 
 CREATE TABLE public.vacancies
 (
-    id bigint NOT NULL,
+    id bigint GENERATED ALWAYS AS IDENTITY,
     owner_id bigint NOT NULL,
     title character varying(512) NOT NULL,
     description text,

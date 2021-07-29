@@ -1,7 +1,7 @@
 #[derive(sqlx::FromRow)]
 pub struct Vacancy {
-    id: i64,
-    owner_id: i64,
-    title: String,
-    description: String,
+    pub id: i64,
+    pub owner_id: i64,
+    pub title: String,
+    pub description: String,
 }

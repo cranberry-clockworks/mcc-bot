@@ -1,7 +1,7 @@
 use crate::bot::states::{BotState, Context, VacancyCreateState};
 use crate::localization;
 
-pub async fn enter_create_state(context: &Context<'_>) -> BotState {
+pub async fn enter_create_state(context: &Context<'_, '_>) -> BotState {
     context
         .send_reply(localization::vacancies_enter_title())
         .await;
@@ -11,7 +11,7 @@ pub async fn enter_create_state(context: &Context<'_>) -> BotState {
 pub async fn next_create_state(
     state: &VacancyCreateState,
     message: &str,
-    context: &Context<'_>,
+    context: &Context<'_, '_>,
 ) -> BotState {
     match &state {
         VacancyCreateState::InputTitle => {
@@ -23,6 +23,10 @@ pub async fn next_create_state(
             })
         }
         VacancyCreateState::InputDescription { title } => {
+            context
+                .db
+                .insert_vacancy(context.user_id, title, message)
+                .await;
             context
                 .send_reply(format!("Title:\n{}\n\nDescription:\n{}", title, message))
                 .await;

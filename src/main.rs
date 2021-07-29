@@ -30,7 +30,7 @@ async fn run() {
             terminate(ErrorCode::FailedConnectToDatabase);
         });
 
-    mccbot::bot::Service::new(&settings.tokens.telegram)
+    mccbot::bot::Service::new(&settings.tokens.telegram, db)
         .run()
         .await;
 }
